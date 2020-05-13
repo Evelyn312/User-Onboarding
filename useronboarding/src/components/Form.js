@@ -1,6 +1,22 @@
-import React from "react";
+import React,{useState} from "react";
 
-function Form (props){
+function Form (){
+
+    const [formState, setFormState] = useState({
+        fName: "",
+        lName: "",
+        email: "",
+        password: "",
+        terms: false
+
+    });
+
+    const inputChange = event => {
+        event.persist();
+
+        setFormState({...formState, [event.target.name]: event.target.value});
+    };
+ 
     return(
         <div>
         <form>
@@ -10,8 +26,8 @@ function Form (props){
                     type="text"
                     name="fName"
                     id="fName"
-                    value={""}
-                    onChange={""}
+                    value={formState.fName}
+                    onChange={inputChange}
                 />
             </label>
             <label htmlFor="lName">
@@ -20,8 +36,8 @@ function Form (props){
                     type="text"
                     name="lName"
                     id="lName"
-                    value={""}
-                    onChange={""} 
+                    value={formState.lName}
+                    onChange={inputChange} 
                 />
             </label>
             <label htmlFor="email">
@@ -30,8 +46,8 @@ function Form (props){
                     type="email"
                     name="email"
                     id="email"
-                    value={""}
-                    onChange={""}
+                    value={formState.email}
+                    onChange={inputChange}
                 />
             </label>
             <label htmlFor="password">
@@ -40,8 +56,8 @@ function Form (props){
                     type="password"
                     name="password"
                     id="password"
-                    value={""}
-                    onChange={""}
+                    value={formState.password}
+                    onChange={inputChange}
                 />
             </label>
             <label htmlFor="terms">
@@ -49,7 +65,7 @@ function Form (props){
                     type="checkbox"
                     id="terms"
                     name="terms"
-                    checked={""}
+                    checked={formState.terms}
                     onChange={""}   
                 />
             Term of Service    
