@@ -2,7 +2,7 @@ import React,{useState, useEffect} from "react";
 import * as yup from "yup";
 import axios from "axios";
 
-function Form (){
+function Form (props){
     const initialState = {
         fName: "",
         lName: "",
@@ -39,7 +39,6 @@ function Form (){
         fName: "",
         lName: "",
         email: "",
-        // motivation: "",
         password: "",
         terms: ""
       });
@@ -76,7 +75,11 @@ function Form (){
         event.preventDefault();
         axios
         .post("https://reqres.in/api/users", formState)
-        .then(response => setFormState(initialState))
+        .then(response => {
+            console.log(response);
+            props.setUsers(response.data);
+            setFormState(initialState);
+        })
         .catch(err => console.log(err));
 
     };
