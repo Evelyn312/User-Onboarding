@@ -1,25 +1,89 @@
-import React,{useState} from "react";
+import React,{useState, useEffect} from "react";
+import * as yup from "yup";
+import axios from "axios";
 
 function Form (){
-
-    const [formState, setFormState] = useState({
+    const initialState = {
         fName: "",
         lName: "",
         email: "",
         password: "",
         terms: false
+    }
+    const [formState, setFormState] = useState(initialState);
 
-    });
+    const formSchema = yup.object().shape({
+        fName: yup.string().required("First Name is a required field"),
+        lName: yup.string().required("Last Name is a required field"),
+        email: yup
+          .string()
+          .email("Must be a valid email address")
+          .required("Must include email address"),
+        // motivation: yup.string().required("Must include why you'd like to join"),
+        password: yup.string().required('No password provided.') 
+            .min(8, 'Password is too short - should be 8 chars minimum.')
+            .matches(/[a-zA-Z]/, 'Password can only contain Latin letters.'),
+
+        terms: yup.boolean().oneOf([true], "Please agree to terms of use")
+      });
+
+      const [buttonDisabled, setButtonDisabled] = useState(true);
+
+      useEffect(() => {
+        formSchema.isValid(formState).then(valid => {
+          setButtonDisabled(!valid);
+        });
+      }, [formState, formSchema]);
+
+      const [errorState, setErrorState] = useState({
+        fName: "",
+        lName: "",
+        email: "",
+        // motivation: "",
+        password: "",
+        terms: ""
+      });
+
+    const validate = e => {
+        let value =
+          e.target.type === "checkbox" ? e.target.checked : e.target.value;
+        yup
+          .reach(formSchema, e.target.name)
+          .validate(value)
+          .then(valid => {
+            setErrorState({
+              ...errorState,
+              [e.target.name]: ""
+            });
+          })
+          .catch(err => {
+            setErrorState({
+              ...errorState,
+              [e.target.name]: err.errors[0]
+            });
+          });
+      };
 
     const inputChange = event => {
         event.persist();
+        validate(event);
+        let value = event.target.type === "checkbox" ? event.target.checked : event.target.value;
 
-        setFormState({...formState, [event.target.name]: event.target.value});
+        setFormState({...formState, [event.target.name]: value});
+    };
+
+    const formSubmit = event => {
+        event.preventDefault();
+        axios
+        .post("https://reqres.in/api/users", formState)
+        .then(response => setFormState(initialState))
+        .catch(err => console.log(err));
+
     };
  
     return(
         <div>
-        <form>
+        <form onSubmit={formSubmit}>
             <label htmlFor="fName">
                 First Name
                 <input
@@ -49,6 +113,7 @@ function Form (){
                     value={formState.email}
                     onChange={inputChange}
                 />
+                {errorState.email.length > 0 ? <p>{errorState.email}</p> : null}
             </label>
             <label htmlFor="password">
                 Password
@@ -59,6 +124,7 @@ function Form (){
                     value={formState.password}
                     onChange={inputChange}
                 />
+                {errorState.password.length > 0 ? <p>{errorState.password}</p>: null}
             </label>
             <label htmlFor="terms">
                 <input 
@@ -66,11 +132,11 @@ function Form (){
                     id="terms"
                     name="terms"
                     checked={formState.terms}
-                    onChange={""}   
+                    onChange={inputChange}   
                 />
             Term of Service    
             </label>
-            <button>Submit</button>
+            <button disabled={buttonDisabled}>Submit</button>
         </form>
         </div>
 
