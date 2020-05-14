@@ -11,11 +11,10 @@ function App() {
   const addUser = user => {
     setUsers([...users, user ]);
   };
-    // users.length >0 ? console.log(users) : console.log('no user yet');
   return (
     <div className="App">
       <Form setUsers={addUser}/>
-      {users ? <Users users={users}/>: null }
+      {users.length > 0 ? <Users users={users}/>: null }
     </div>
   );
 }
