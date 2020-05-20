@@ -97,6 +97,7 @@ function Form (props){
                     onChange={inputChange}
                     data-cy="fName"
                 />
+                {errorState.fName.length > 0 ? <p id="error">{errorState.fName}</p>: null}
             </label>
             <label htmlFor="lName">
                 Last Name
@@ -106,7 +107,9 @@ function Form (props){
                     id="lName"
                     value={formState.lName}
                     onChange={inputChange} 
+                    data-cy="lName"
                 />
+                {errorState.lName.length > 0 ? <p>{errorState.lName}</p>: null}
             </label>
             <label htmlFor="email">
                 Email
